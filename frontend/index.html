@@ -48,22 +48,23 @@
       <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Decrease" @click="post_index--">
         <i class="fa fa-arrow-up "></i>
       </button>
-      <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Front" @click="set_front">
-        <i class="fa fa-file-text  "></i>
-      </button>
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Multis">
-          <i class="fa fa-arrows"></i>
+          <i class="fa fa-file-text  "></i>
+          <a v-if="!!params['m']">{{ params['m'] }}</a>
+          <a v-else>front</a>
         </button>     
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
+          <button class="w3-bar-item w3-button" :title="front" @click="set_front">front</button>
           <template v-for="multi in multis">
             <button class="w3-bar-item w3-button" :title="multi" @click="set_multi(multi)">{{multi}}</button>
           </template>
         </div>
       </div>
+       <!-- <a contenteditable="true" class="w3-bar-item">{{ params['r'] }}</a> -->
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Top time sort">
-          <i class="fa fa-clock-o "></i>
+          <i class="fa fa-clock-o "></i>{{ params['t'] }}
         </button>     
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
           <template v-for="timesort in timesorts">
@@ -73,7 +74,7 @@
       </div>
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Type sort">
-          <i class="fa fa-sort"></i>
+          <i class="fa fa-sort"></i>{{ params['sort'] }}
         </button>     
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
           <!-- TODO disable best when multi-->
@@ -172,15 +173,60 @@
         async set_front() {
           this.params.r = '';
           this.params.m = '';
+          this.post_index = 0
+          this.posts = [{
+            link_id: '',
+            user_id: '',
+            user_name: '',
+            subreddit_id: '',
+            subreddit_name: '',
+            post_title: '',
+            post_url: '',
+            post_created_utc: '',
+            post_score: '',
+            direct_url: '',
+            direct_type: '',
+            direct_poster: '',
+          }];
         },
 
         async set_multi(multi) {
           this.params.r = '';
           this.params.m = multi;
+          this.post_index = 0
+          this.posts = [{
+            link_id: '',
+            user_id: '',
+            user_name: '',
+            subreddit_id: '',
+            subreddit_name: '',
+            post_title: '',
+            post_url: '',
+            post_created_utc: '',
+            post_score: '',
+            direct_url: '',
+            direct_type: '',
+            direct_poster: '',
+          }];
         },
 
         async set_timesort(timesort) {
           this.params.t = timesort;
+          this.post_index = 0
+          this.posts = [{
+            link_id: '',
+            user_id: '',
+            user_name: '',
+            subreddit_id: '',
+            subreddit_name: '',
+            post_title: '',
+            post_url: '',
+            post_created_utc: '',
+            post_score: '',
+            direct_url: '',
+            direct_type: '',
+            direct_poster: '',
+          }];
         },
 
         async set_sort(sort) {    
@@ -200,8 +246,6 @@
             direct_type: '',
             direct_poster: '',
           }];
-          await this.add_items();
-          this.post_index++
         },
 
         async add_items() {
