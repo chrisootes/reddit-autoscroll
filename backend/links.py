@@ -82,19 +82,19 @@ async def parse_links(l: models.Submission, after: str):
 
         # First check for imgut or redgifs image
         if ('imgur' in l_url or 'i.redgifs' in l_url) and (l_url.endswith('.jpg') or l_url.endswith('.jpeg')):
-            direct_url = './5-seconds-of-silence.mp3'
+            direct_url = './audio/5-seconds-of-silence.mp3'
             direct_type = ''
             direct_poster = l.preview['images'][0]['source']['url']
 
         # Then jpg
         elif l_url.endswith('.jpg') or l_url.endswith('.jpeg'):
-            direct_url = './5-seconds-of-silence.mp3'
+            direct_url = './audio/5-seconds-of-silence.mp3'
             direct_type = ''
             direct_poster = l_url
 
         # Then png image
         elif l_url.endswith('.png'):
-            direct_url = './5-seconds-of-silence.mp3'
+            direct_url = './audio/5-seconds-of-silence.mp3'
             direct_type = ''
             direct_poster = l_url
 
@@ -105,7 +105,7 @@ async def parse_links(l: models.Submission, after: str):
             for i, (media_id, media) in enumerate(l.media_metadata.items()):
                 if media['e'] == 'Image':
                     # TODO multiple posts
-                    direct_url = './5-seconds-of-silence.mp3'
+                    direct_url = './audio/5-seconds-of-silence.mp3'
                     direct_type = ''
                     direct_poster = media['s']['u']
                     posts.append({
@@ -130,21 +130,21 @@ async def parse_links(l: models.Submission, after: str):
             #logger.debug(json.dumps(l.preview))
             direct_url = l.preview['images'][0]['variants']['mp4']['source']['url']
             direct_type = 'video/mp4'
-            direct_poster = './black_pixel.png'
+            direct_poster = './img/black_pixel.png'
 
         elif 'imgur' in l_url and '.gif' in l_url:
             logger.debug(json.dumps(l.preview))
             try:
                 direct_url = l.preview['images'][0]['variants']['mp4']['source']['url']
                 direct_type = 'video/mp4'
-                direct_poster = './black_pixel.png'
+                direct_poster = './img/black_pixel.png'
             except:
                 direct_url = l.preview['reddit_video_preview']['fallback_url']
 
         elif 'v.redd.it' in l_url and l.media is not None:
             direct_url = l.media['reddit_video']['dash_url']
             direct_type = 'application/dash+xml'
-            direct_poster = './black_pixel.png'
+            direct_poster = './img/black_pixel.png'
 
         else:
             logger.warn(f"{l_id} Unkown type: {l_url}")
