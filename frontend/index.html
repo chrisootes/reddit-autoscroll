@@ -55,7 +55,7 @@
           <a v-else>front</a>
         </button>     
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
-          <button class="w3-bar-item w3-button" :title="front" @click="set_front">front</button>
+          <button class="w3-bar-item w3-button" @click="set_front">front</button>
           <template v-for="multi in multis">
             <button class="w3-bar-item w3-button" :title="multi" @click="set_multi(multi)">{{multi}}</button>
           </template>
@@ -64,7 +64,7 @@
        <!-- <a contenteditable="true" class="w3-bar-item">{{ params['r'] }}</a> -->
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Top time sort">
-          <i class="fa fa-clock-o "></i>{{ params['t'] }}
+          <i class="fa fa-clock-o "></i><a>{{ params['t'] }}</a>
         </button>     
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
           <template v-for="timesort in timesorts">
@@ -74,7 +74,7 @@
       </div>
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Type sort">
-          <i class="fa fa-sort"></i>{{ params['sort'] }}
+          <i class="fa fa-sort"></i><a></a>{{ params['sort'] }}</a>
         </button>     
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
           <!-- TODO disable best when multi-->
@@ -86,7 +86,7 @@
       </div>
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Filters">
-          <i class="fa fa-filter"></i>{{ params['filters'] }}
+          <i class="fa fa-filter"></i><a>{{ params['filters'] }}</a>
         </button>     
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
           <button class="w3-bar-item w3-button" tiltle="Yes" @click="set_filters(true)">Yes</button>
@@ -158,19 +158,30 @@
 
       watch: {
         post_index(new_index, old_index) {
-          console.log('new_index:', new_index);
           console.log('old_index:', old_index);
+          console.log('new_index:', new_index);
           console.log('direct_url:', this.posts[new_index].direct_url);
           console.log('direct_type:', this.posts[new_index].direct_type);
           console.log('direct_poster:', this.posts[new_index].direct_poster);
 
           this.player.poster(this.posts[new_index].direct_poster);
-          if (this.posts[new_index].direct_url.includes('redgifs')) {
+
+          // empty
+          if (this.posts[new_index].direct_url == '') {
+            console.log('paused because empty url');
+            this.player.pause()
+
+          // redgifs
+          } else if (this.posts[new_index].direct_url.includes('redgifs')) {
             const redgifs_url = "./api/redgifs?url=" + encodeURIComponent(this.posts[new_index].direct_url);
             console.log('redgifs_url:', redgifs_url);
             this.player.src({type: 'video/mp4', src: redgifs_url})
+
+          // unknown type
           } else if (this.posts[new_index].direct_type == '') {
             this.player.src(this.posts[new_index].direct_url);
+
+          // known type
           } else {
             this.player.src({type: this.posts[new_index].direct_type, src: this.posts[new_index].direct_url})
           }
@@ -181,107 +192,69 @@
       // They can be bound as event handlers in templates.
       methods: {
         
+      async reset_posts() {
+        this.posts = [{
+          link_id: '',
+          user_id: '',
+          user_name: '',
+          subreddit_id: '',
+          subreddit_name: '',
+          post_title: '',
+          post_url: '',
+          post_created_utc: '',
+          post_score: '',
+          direct_url: '',
+          direct_type: '',
+          direct_poster: './img/black_pixel.png',
+        }];
+        this.post_index = 0
+      },
+
         async set_front() {
           this.params.r = '';
           this.params.m = '';
-          this.post_index = 0
-          this.posts = [{
-            link_id: '',
-            user_id: '',
-            user_name: '',
-            subreddit_id: '',
-            subreddit_name: '',
-            post_title: '',
-            post_url: '',
-            post_created_utc: '',
-            post_score: '',
-            direct_url: '',
-            direct_type: '',
-            direct_poster: '',
-          }];
+          this.reset_posts();
         },
 
         async set_multi(multi) {
           this.params.r = '';
           this.params.m = multi;
-          this.post_index = 0
-          this.posts = [{
-            link_id: '',
-            user_id: '',
-            user_name: '',
-            subreddit_id: '',
-            subreddit_name: '',
-            post_title: '',
-            post_url: '',
-            post_created_utc: '',
-            post_score: '',
-            direct_url: '',
-            direct_type: '',
-            direct_poster: '',
-          }];
+          this.reset_posts();
         },
 
         async set_timesort(timesort) {
           this.params.t = timesort;
-          this.post_index = 0
-          this.posts = [{
-            link_id: '',
-            user_id: '',
-            user_name: '',
-            subreddit_id: '',
-            subreddit_name: '',
-            post_title: '',
-            post_url: '',
-            post_created_utc: '',
-            post_score: '',
-            direct_url: '',
-            direct_type: '',
-            direct_poster: '',
-          }];
+          this.reset_posts();
         },
 
         async set_sort(sort) {    
           this.params.sort = sort;
-          this.post_index = 0
-          this.posts = [{
-            link_id: '',
-            user_id: '',
-            user_name: '',
-            subreddit_id: '',
-            subreddit_name: '',
-            post_title: '',
-            post_url: '',
-            post_created_utc: '',
-            post_score: '',
-            direct_url: '',
-            direct_type: '',
-            direct_poster: '',
-          }];
+          this.reset_posts();
         },
 
         async set_filters(filters) {    
           this.params.filters = filters;
-          this.post_index = 0
-          this.posts = [{
-            link_id: '',
-            user_id: '',
-            user_name: '',
-            subreddit_id: '',
-            subreddit_name: '',
-            post_title: '',
-            post_url: '',
-            post_created_utc: '',
-            post_score: '',
-            direct_url: '',
-            direct_type: '',
-            direct_poster: '',
-          }];
+          this.reset_posts();
         },
 
-        async add_items() {
+        async add_posts() {
           // ask backend for more links
+          console.log('adding new posts');
+
+          if (this.ended) {
+            console.log('ended, so not adding new posts');
+            return
+          }
+
+          // block adding async
+          if (this.adding) {
+            console.log('already adding new posts');
+            return
+          }
           this.adding = true;
-          // TODO hashtag
+
+          // TODO edit url hashtag
+
           // get latest post
           if (this.posts.length > 1) {
             this.params.after = `t3_${this.posts.at(-1).link_id}`;
@@ -290,6 +263,7 @@
           const new_query = './api?'+search_params;
 
           console.log('new_query:', new_query);
+          // TODO loading
           let new_items = await (await fetch(new_query, {cache: "no-store"})).json();
           console.log('new_items:', JSON.stringify(new_items, null, 4))
 
@@ -330,15 +304,14 @@
             console.log('stuck, no new posts and not increasing');
           }
           // ask backend for more links when there are less then 10 left
-          if (((this.post_index + 10) > this.posts.length) && (this.adding == false)) {
-            console.log('less then 10 left');
-            if (!this.ended) {
-              this.add_items();
-            }
+          if ((this.post_index + 10) > this.posts.length) {
+            console.log('less then 10 left, adding');
+            this.add_posts();
           }
         },
         
         async on_ended() {
+          console.log('post video ended, autoscrolling');
           this.increase_post_index();
         }
       },
