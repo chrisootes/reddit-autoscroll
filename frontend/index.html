@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Frontend Vue.js</title>
+  <base charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./css/w3.css">
+  <link rel="stylesheet" href="./css/w3-theme-blue-grey.css">
+  <link rel="stylesheet" href="./font/font-awesome.min.css">
+  <link rel="stylesheet" href="./videojs/video-js.min.css">
+  <style>
+    #app,
+    html,
+    body {
+      width: 100%;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fillpage {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <script type="importmap">
+    {
+      "imports": {
+        "vue": "./js/vue.esm-browser.js"
+      }
+    }
+  </script>
+
+  <div id="app">
+
+    <!-- Navbar -->
+    <div class="w3-bar w3-large w3-theme-d2">
+      <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Increase" @click="increase_post_index">
+        <i class="fa fa-arrow-down "></i>
+      </button>
+      <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Decrease" @click="post_index--">
+        <i class="fa fa-arrow-up "></i>
+      </button>
+      <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Front" @click="set_front">
+        <i class="fa fa-file-text  "></i>
+      </button>
+      <div class="w3-dropdown-hover w3-hide-small">
+        <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Multis">
+          <i class="fa fa-arrows"></i>
+        </button>     
+        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
+          <template v-for="multi in multis">
+            <button class="w3-bar-item w3-button" :title="multi" @click="set_multi(multi)">{{multi}}</button>
+          </template>
+        </div>
+      </div>
+      <div class="w3-dropdown-hover w3-hide-small">
+        <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Top time sort">
+          <i class="fa fa-clock-o "></i>
+        </button>     
+        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
+          <template v-for="timesort in timesorts">
+            <button class="w3-bar-item w3-button" :title="timesort" @click="set_timesort(timesort)">{{timesort}}</button>
+          </template>
+        </div>
+      </div>
+      <div class="w3-dropdown-hover w3-hide-small">
+        <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Type sort">
+          <i class="fa fa-sort"></i>
+        </button>     
+        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
+          <!-- TODO disable best when multi-->
+          <button class="w3-bar-item w3-button" tiltle="Best" @click="set_sort('best')">Best</button>
+          <button class="w3-bar-item w3-button" tiltle="Hot" @click="set_sort('hot')">Hot</button>
+          <button class="w3-bar-item w3-button" tiltle="New" @click="set_sort('new')">New</button>
+          <button class="w3-bar-item w3-button" tiltle="Top" @click="set_sort('top')">Top</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Container with videoplayer -->
+    <div class="w3-content fillpage">
+      <div class="w3-card-4 w3-white w3-round w3-margin fillpage">
+        <div class="w3-margin vjs-fill" style="flex: 1;">
+          <video ref="video" class="video-js"></video>
+        </div>
+        <div class="w3-container">
+          <hr class="w3-clear w3-display-bottommiddle">
+          <p><i class="fa fa-header w3-margin-right w3-text-theme"></i>{{ posts[post_index].post_title }}</p>
+          <p><i class="fa fa-subway w3-margin-right w3-text-theme"></i><a v-bind:href="'https://old.reddit.com/r/'+posts[post_index].subreddit_name">{{ posts[post_index].subreddit_name }}</a></p>
+          <p><i class="fa fa-user w3-margin-right w3-text-theme"></i><a v-bind:href="'https://old.reddit.com/u/'+posts[post_index].user_name">{{ posts[post_index].user_name }}</a></p>
+          <p><i class="fa fa-calendar w3-margin-right w3-text-theme"></i>{{ posts[post_index].post_created_utc }}</p>
+          <p><i class="fa fa-star w3-margin-right w3-text-theme"></i>{{ posts[post_index].post_score }}</p>
+          <p><i class="fa fa-link w3-margin-right w3-text-theme"></i><a v-bind:href="'https://old.reddit.com/'+posts[post_index].link_id">Post</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./videojs/video.min.js"></script>
+  <script type="module">
+    import { createApp, ref } from 'vue'
+
+    const app = createApp({
+
+      // Properties returned from data() become reactive state
+      // and will be exposed on `this`.
+      data() {
+        return {
+          posts: [{
+            link_id: '',
+            user_id: '',
+            user_name: '',
+            subreddit_id: '',
+            subreddit_name: '',
+            post_title: '',
+            post_url: '',
+            post_created_utc: '',
+            post_score: '',
+            direct_url: '',
+            direct_type: '',
+            direct_poster: '',
+          }],
+          post_index: 0,
+          gallery_index: 0,
+          player: null,
+          adding: false,
+          params: {
+            after: '',
+            sort: 'best',
+            t: 'all',
+            r: '',
+            m: ''
+          },
+          multis: [],
+          timesorts: ['hour', 'day', 'week', 'month', 'year', 'all']
+        }
+      },
+
+      watch: {
+        post_index(new_index, old_index) {
+          console.log('new_index:', new_index);
+          console.log('old_index:', old_index);
+          console.log('direct_url:', this.posts[new_index].direct_url);
+          console.log('direct_type:', this.posts[new_index].direct_type);
+          console.log('direct_poster:', this.posts[new_index].direct_poster);
+
+          this.player.poster(this.posts[new_index].direct_poster);
+          if (this.posts[new_index].direct_url.includes('redgifs')) {
+            const redgifs_url = "./api/redgifs?url=" + encodeURIComponent(this.posts[new_index].direct_url);
+            console.log('redgifs_url:', redgifs_url);
+            this.player.src({type: 'video/mp4', src: redgifs_url})
+          } else if (this.posts[new_index].direct_type == '') {
+            this.player.src(this.posts[new_index].direct_url);
+          } else {
+            this.player.src({type: this.posts[new_index].direct_type, src: this.posts[new_index].direct_url})
+          }
+          
+        }
+      },
+      // Methods are functions that mutate state and trigger updates.
+      // They can be bound as event handlers in templates.
+      methods: {
+        
+        async set_front() {
+          this.params.r = '';
+          this.params.m = '';
+        },
+
+        async set_multi(multi) {
+          this.params.r = '';
+          this.params.m = multi;
+        },
+
+        async set_timesort(timesort) {
+          this.params.t = timesort;
+        },
+
+        async set_sort(sort) {    
+          this.params.sort = sort;
+          this.post_index = 0
+          this.posts = [{
+            link_id: '',
+            user_id: '',
+            user_name: '',
+            subreddit_id: '',
+            subreddit_name: '',
+            post_title: '',
+            post_url: '',
+            post_created_utc: '',
+            post_score: '',
+            direct_url: '',
+            direct_type: '',
+            direct_poster: '',
+          }];
+          await this.add_items();
+          this.post_index++
+        },
+
+        async add_items() {
+          // ask backend for more links
+          this.adding = true;
+          // TODO hashtag
+          // get latest post
+          if (this.posts.length > 1) {
+            this.params.after = `t3_${this.posts.at(-1).link_id}`;
+          }
+          const search_params = new URLSearchParams(this.params);
+          const new_query = './api?'+search_params;
+
+          console.log('new_query:', new_query);
+          let new_items = await (await fetch(new_query, {cache: "no-store"})).json();
+          console.log('new_items:', JSON.stringify(new_items, null, 4))
+
+          // TODO remove duplicates
+          
+          
+          // check if stuck waiting on new links
+          let stuck = false;
+          if (this.post_index == (this.posts.length-1)) {
+            stuck = true;
+          }
+
+          // push has Array Change Detection on component properties
+          this.posts.push(...new_items);
+          this.adding = false;
+          console.log('posts.length:', this.posts.length);
+          
+          // resume
+          if (stuck) {
+            console.log('stuck, so increasing post index');
+            this.increase_post_index();
+          }
+        },
+
+        async increase_post_index() {
+          // only increase if there are new posts
+          if (this.post_index < (this.posts.length-1)) {
+            this.post_index++;
+          }
+          console.log('post_index:', this.post_index);
+          // ask backend for more links when there are less then 10 left
+          if (((this.post_index + 10) > this.posts.length) && (this.adding == false)) {
+            this.add_items();
+          }
+        },
+        
+        async on_ended() {
+          this.increase_post_index()
+        }
+      },
+
+      // Lifecycle hooks are called at different stages
+      // of a component's lifecycle.
+      // This function will be called when the component is mounted.
+      async mounted() {
+        this.multis.push(...await (await fetch('./api/multis')).json());
+        console.log('Loading the player.')
+        let video_options = {
+          fill: true,
+          autoplay: true,
+          controls: true,
+        }
+        this.player = videojs(this.$refs.video, video_options);
+        this.player.on('ended', this.on_ended);
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+
+</html>
