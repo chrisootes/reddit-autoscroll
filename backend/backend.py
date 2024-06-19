@@ -152,7 +152,7 @@ async def redgifs(url: str = ''):
 
 @app.get("/api")
 @cache(expire=86400)
-async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: str = ''):
+async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: str = '', filters: bool = True):
     """
     after: t3_link id
     sort: best, hot, new, rising, controversial, top
@@ -162,9 +162,12 @@ async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: 
     """
     
     params = {}
+
+    # next page
     if after != '':
         params['after'] = after
     
+    # valid sort time
     if t not in ['hour', 'day', 'week', 'month', 'year', 'all']:
         return None
 
@@ -200,7 +203,7 @@ async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: 
     # multiple
     posts = []
     async for link in generator:
-        new_posts = await links.parse_links(link, after)
+        new_posts = await links.parse_links(link, after, filters)
         if new_posts is not None:
             # concat list of new posts
             posts += new_posts

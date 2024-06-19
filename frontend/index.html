@@ -84,6 +84,15 @@
           <button class="w3-bar-item w3-button" tiltle="Top" @click="set_sort('top')">Top</button>
         </div>
       </div>
+      <div class="w3-dropdown-hover w3-hide-small">
+        <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Filters">
+          <i class="fa fa-filter"></i>{{ params['filters'] }}
+        </button>     
+        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
+          <button class="w3-bar-item w3-button" tiltle="Yes" @click="set_filters(true)">Yes</button>
+          <button class="w3-bar-item w3-button" tiltle="No" @click="set_filters(false)">No</button>
+        </div>
+      </div>
     </div>
 
     <!-- Container with videoplayer -->
@@ -138,10 +147,12 @@
             sort: 'best',
             t: 'all',
             r: '',
-            m: ''
+            m: '',
+            filters: true
           },
           multis: [],
-          timesorts: ['hour', 'day', 'week', 'month', 'year', 'all']
+          timesorts: ['hour', 'day', 'week', 'month', 'year', 'all'],
+          ended: false
         }
       },
 
@@ -248,6 +259,25 @@
           }];
         },
 
+        async set_filters(filters) {    
+          this.params.filters = filters;
+          this.post_index = 0
+          this.posts = [{
+            link_id: '',
+            user_id: '',
+            user_name: '',
+            subreddit_id: '',
+            subreddit_name: '',
+            post_title: '',
+            post_url: '',
+            post_created_utc: '',
+            post_score: '',
+            direct_url: '',
+            direct_type: '',
+            direct_poster: '',
+          }];
+        },
+
         async add_items() {
           // ask backend for more links
           this.adding = true;
@@ -263,9 +293,16 @@
           let new_items = await (await fetch(new_query, {cache: "no-store"})).json();
           console.log('new_items:', JSON.stringify(new_items, null, 4))
 
+          // empty list
+          if (new_items.length == 0) {
+            this.adding = false;
+            this.ended = true;
+            // TODO show on gui
+            return
+          }
+
           // TODO remove duplicates
-          
-          
+
           // check if stuck waiting on new links
           let stuck = false;
           if (this.post_index == (this.posts.length-1)) {
@@ -279,25 +316,30 @@
           
           // resume
           if (stuck) {
-            console.log('stuck, so increasing post index');
+            console.log('stuck, so trying to increasing post index');
             this.increase_post_index();
           }
         },
 
         async increase_post_index() {
+          console.log('increasing post_index, current:', this.post_index);
           // only increase if there are new posts
           if (this.post_index < (this.posts.length-1)) {
             this.post_index++;
+          } else {
+            console.log('stuck, no new posts and not increasing');
           }
-          console.log('post_index:', this.post_index);
           // ask backend for more links when there are less then 10 left
           if (((this.post_index + 10) > this.posts.length) && (this.adding == false)) {
-            this.add_items();
+            console.log('less then 10 left');
+            if (!this.ended) {
+              this.add_items();
+            }
           }
         },
         
         async on_ended() {
-          this.increase_post_index()
+          this.increase_post_index();
         }
       },
 

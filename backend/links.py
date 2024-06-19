@@ -13,10 +13,10 @@ import bs4
 import yt_dlp
 
 import config
-import filter
+import filters
 
 # l = link
-async def parse_links(l: models.Submission, after: str):
+async def parse_links(l: models.Submission, after: str, enable_filters):
     try:
         global global_filename
         global_filename = ''
@@ -64,9 +64,10 @@ async def parse_links(l: models.Submission, after: str):
             #return None
         
         # filter
-        if filter.filter(l, l_id, l_title, l_url):
-            logger.debug(f"{l_id} Filtered")
-            return None
+        if enable_filters:
+            if filters.filter(l, l_id, l_title, l_url):
+                logger.debug(f"{l_id} Filtered")
+                return None
 
         # Check for non utf8 characters
         l_title_utf8 = l_title.encode('utf8', 'ignore').decode('utf8')
@@ -123,7 +124,7 @@ async def parse_links(l: models.Submission, after: str):
                         'direct_poster': direct_poster,
                     })
             return posts
-
+        
         # get mp4 preview if gif
         elif 'i.redd.it' in l_url and '.gif' in l_url:
             #TODO sometimes gif is image
@@ -140,6 +141,8 @@ async def parse_links(l: models.Submission, after: str):
                 direct_poster = './img/black_pixel.png'
             except:
                 direct_url = l.preview['reddit_video_preview']['fallback_url']
+
+        #TODO does not seem to work : https://v.redd.it/an8oneqxnd7d1/DASHPlaylist.mpd?a=1721392778%2CNDJlYjA2MzcxMjhjMzM2M2JlYzhlYWZiOTdlNzJmZjA3YTgwNTkxNDE1OTU2YWE0NjRhMWEwZWZjZWQ2YmU5ZA%3D%3D&v=1&f=sd localhost:8000:163:19
 
         elif 'v.redd.it' in l_url and l.media is not None:
             direct_url = l.media['reddit_video']['dash_url']
