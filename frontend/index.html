@@ -89,8 +89,8 @@
           <i class="fa fa-filter"></i><a>{{ params['filters'] }}</a>
         </button>     
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
-          <button class="w3-bar-item w3-button" tiltle="Yes" @click="set_filters(true)">Yes</button>
           <button class="w3-bar-item w3-button" tiltle="No" @click="set_filters(false)">No</button>
+          <button class="w3-bar-item w3-button" tiltle="Yes" @click="set_filters(true)">Yes</button>
         </div>
       </div>
     </div>
@@ -148,7 +148,7 @@
             t: 'all',
             r: '',
             m: '',
-            filters: true
+            filters: false
           },
           multis: [],
           timesorts: ['hour', 'day', 'week', 'month', 'year', 'all'],
