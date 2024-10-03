@@ -12,8 +12,8 @@ import aiohttp
 import bs4
 import yt_dlp
 
-import config
-import filters
+from . import config
+from . import filters
 
 # l = link
 async def parse_links(l: models.Submission, after: str, enable_filters):

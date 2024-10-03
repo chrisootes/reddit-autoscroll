@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 import yt_dlp
 import requests
 
-import config
+from . import config
 
 class DownloadThread(threading.Thread):
     def __init__(self, queue: Queue):

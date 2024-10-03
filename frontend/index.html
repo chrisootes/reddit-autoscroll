@@ -260,10 +260,11 @@
             this.params.after = `t3_${this.posts.at(-1).link_id}`;
           }
           const search_params = new URLSearchParams(this.params);
-          const new_query = './api?'+search_params;
+          const new_query = './api/?'+search_params;
 
           console.log('new_query:', new_query);
           // TODO loading
+          // TODO then for catching emtpy
           let new_items = await (await fetch(new_query, {cache: "no-store"})).json();
           console.log('new_items:', JSON.stringify(new_items, null, 4))
 
