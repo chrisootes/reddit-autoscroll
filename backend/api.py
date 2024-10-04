@@ -1,28 +1,16 @@
 import logging
 import socket
 
-import asyncpraw
+import aiohttp
 import fastapi
 from fastapi import Response
-import aiohttp
-import yt_dlp
-import yt_dlp.extractor.redgifs
 from fastapi_cache.decorator import cache
 
 from . import config
 from . import links
 
 logger = logging.getLogger(__name__)
-
-downloader = yt_dlp.YoutubeDL()
-reddit = asyncpraw.Reddit(
-    client_id=config.CLIENT_ID,
-    client_secret=config.CLIENT_SECRET,
-    username=config.USERNAME,
-    password=config.PASSWORD,
-    user_agent=config.USERNAME,
-    redirect_uri=config.HOSTNAME)
-
+reddit = None
 router = fastapi.APIRouter(
     prefix="/api"
 )
@@ -33,7 +21,6 @@ async def multis():
     return [m.display_name for m in await reddit.user.multireddits()]
 
 @router.get("/redgifs")
-#@cache(expire=86400)
 async def redgifs(url: str = ''):
     logger.debug(f"redgifs url: {url}")
     

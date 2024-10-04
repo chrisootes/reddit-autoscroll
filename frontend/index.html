@@ -42,10 +42,10 @@
 
     <!-- Navbar -->
     <div class="w3-bar w3-large w3-theme-d2">
-      <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Increase" @click="increase_post_index">
+      <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-hide-small" title="Increase" @click="increase_post_index">
         <i class="fa fa-arrow-down "></i>
       </button>
-      <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Decrease" @click="post_index--">
+      <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-hide-small" title="Decrease" @click="post_index--">
         <i class="fa fa-arrow-up "></i>
       </button>
       <div class="w3-dropdown-hover w3-hide-small">
@@ -61,7 +61,6 @@
           </template>
         </div>
       </div>
-       <!-- <a contenteditable="true" class="w3-bar-item">{{ params['r'] }}</a> -->
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Top time sort">
           <i class="fa fa-clock-o "></i><a>{{ params['t'] }}</a>
@@ -93,24 +92,29 @@
           <button class="w3-bar-item w3-button" tiltle="Yes" @click="set_filters(true)">Yes</button>
         </div>
       </div>
+      <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="Title">
+        <i class="fa fa-header"></i><a>{{ posts[post_index].post_title }}</a>
+      </div>
+      <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="Subreddit">
+        <i class="fa fa-subway"></i><a v-bind:href="'https://old.reddit.com/r/'+posts[post_index].subreddit_name">{{ posts[post_index].subreddit_name }}</a>
+      </div>
+      <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="User">
+        <i class="fa fa-user"></i><a v-bind:href="'https://old.reddit.com/u/'+posts[post_index].user_name">{{ posts[post_index].user_name }}</a>
+      </div>
+      <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="Created">
+        <i class="fa fa-calendar"></i><a>{{ posts[post_index].post_created_utc }}</a>
+      </div>
+      <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="Score">
+        <i class="fa fa-star"></i><a>{{ posts[post_index].post_score }}</a>
+      </div>
+      <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="Post">
+        <i class="fa fa-star"></i><a target="_blank" v-bind:href="'https://old.reddit.com/comments/'+posts[post_index].link_id">Post</a>
+      </div>
     </div>
 
     <!-- Container with videoplayer -->
-    <div class="w3-content fillpage">
-      <div class="w3-card-4 w3-white w3-round w3-margin fillpage">
-        <div class="w3-margin vjs-fill" style="flex: 1;">
-          <video ref="video" class="video-js"></video>
-        </div>
-        <div class="w3-container">
-          <hr class="w3-clear w3-display-bottommiddle">
-          <p><i class="fa fa-header w3-margin-right w3-text-theme"></i>{{ posts[post_index].post_title }}</p>
-          <p><i class="fa fa-subway w3-margin-right w3-text-theme"></i><a v-bind:href="'https://old.reddit.com/r/'+posts[post_index].subreddit_name">{{ posts[post_index].subreddit_name }}</a></p>
-          <p><i class="fa fa-user w3-margin-right w3-text-theme"></i><a v-bind:href="'https://old.reddit.com/u/'+posts[post_index].user_name">{{ posts[post_index].user_name }}</a></p>
-          <p><i class="fa fa-calendar w3-margin-right w3-text-theme"></i>{{ posts[post_index].post_created_utc }}</p>
-          <p><i class="fa fa-star w3-margin-right w3-text-theme"></i>{{ posts[post_index].post_score }}</p>
-          <p><i class="fa fa-link w3-margin-right w3-text-theme"></i><a v-bind:href="'https://old.reddit.com/'+posts[post_index].link_id">Post</a></p>
-        </div>
-      </div>
+    <div class="w3-content fillpage vjs-fill" style="flex: 1;">
+      <video ref="video" class="video-js"></video>
     </div>
   </div>
 

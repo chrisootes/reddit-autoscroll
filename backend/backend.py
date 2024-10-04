@@ -3,9 +3,9 @@ from contextlib import asynccontextmanager
 
 import fastapi
 from fastapi import staticfiles
-from fastapi.middleware import cors
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
+import asyncpraw
 
 from . import config
 from . import api
@@ -18,6 +18,13 @@ logger.info("FRONTEND_DIR: "+config.FRONTEND_DIR)
 async def lifespan(app_l: fastapi.FastAPI):
     # Do something before server starts
     FastAPICache.init(InMemoryBackend())
+    api.reddit = asyncpraw.Reddit(
+        client_id=config.CLIENT_ID,
+        client_secret=config.CLIENT_SECRET,
+        username=config.USERNAME,
+        password=config.PASSWORD,
+        user_agent=config.USERNAME,
+        redirect_uri=config.HOSTNAME)
 
     # Run server loop
     yield
@@ -26,13 +33,6 @@ async def lifespan(app_l: fastapi.FastAPI):
     await api.reddit.close()
 
 app = fastapi.FastAPI(lifespan=lifespan)
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
 
 @app.get("/clear")
 async def clear():
