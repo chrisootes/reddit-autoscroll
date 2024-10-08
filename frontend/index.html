@@ -113,15 +113,14 @@
     </div>
 
     <!-- Container with videoplayer -->
-    <div class="w3-content fillpage vjs-fill" style="flex: 1;">
-      <video ref="video" class="video-js"></video>
+    <div class="w3-content fillpage vjs-fill">
+      <video ref="videoplayer" class="video-js"></video>
     </div>
   </div>
 
   <script src="./videojs/video.min.js"></script>
   <script type="module">
-    import { createApp, ref } from 'vue'
-
+    import { createApp, ref, toRaw } from 'vue'
     const app = createApp({
 
       // Properties returned from data() become reactive state
@@ -144,7 +143,7 @@
           }],
           post_index: 0,
           gallery_index: 0,
-          player: null,
+          videoplayer: null,
           adding: false,
           params: {
             after: '',
@@ -167,27 +166,30 @@
           console.log('direct_url:', this.posts[new_index].direct_url);
           console.log('direct_type:', this.posts[new_index].direct_type);
           console.log('direct_poster:', this.posts[new_index].direct_poster);
+          
+          // fix some weird clone proxy error when playing dash mpd playlist
+          const rawvideoplayer = toRaw(this.videoplayer);
 
-          this.player.poster(this.posts[new_index].direct_poster);
+          rawvideoplayer.poster(this.posts[new_index].direct_poster);
 
           // empty
           if (this.posts[new_index].direct_url == '') {
             console.log('paused because empty url');
-            this.player.pause()
+            rawvideoplayer.pause()
 
           // redgifs
           } else if (this.posts[new_index].direct_url.includes('redgifs')) {
             const redgifs_url = "./api/redgifs?url=" + encodeURIComponent(this.posts[new_index].direct_url);
             console.log('redgifs_url:', redgifs_url);
-            this.player.src({type: 'video/mp4', src: redgifs_url})
+            rawvideoplayer.src({type: 'video/mp4', src: redgifs_url})
 
           // unknown type
           } else if (this.posts[new_index].direct_type == '') {
-            this.player.src(this.posts[new_index].direct_url);
+            rawvideoplayer.src(this.posts[new_index].direct_url);
 
           // known type
           } else {
-            this.player.src({type: this.posts[new_index].direct_type, src: this.posts[new_index].direct_url})
+            rawvideoplayer.src({type: this.posts[new_index].direct_type, src: this.posts[new_index].direct_url})
           }
           
         }
@@ -327,13 +329,10 @@
       async mounted() {
         this.multis.push(...await (await fetch('./api/multis')).json());
         console.log('Loading the player.')
-        let video_options = {
-          fill: true,
-          autoplay: true,
-          controls: true,
-        }
-        this.player = videojs(this.$refs.video, video_options);
-        this.player.on('ended', this.on_ended);
+        this.videoplayer = videojs(this.$refs.videoplayer, {fill: true, autoplay: true, controls: true}, () => {
+          console.log('onPlayerReady');
+        });
+        this.videoplayer.on('ended', this.on_ended);
       }
     })
     app.mount('#app')
