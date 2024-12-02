@@ -41,13 +41,16 @@
   <div id="app">
 
     <!-- Navbar -->
+    <!-- Increase input -->
     <div class="w3-bar w3-large w3-theme-d2">
       <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-hide-small" title="Increase" @click="increase_post_index">
         <i class="fa fa-arrow-down "></i>
       </button>
+      <!-- Decrease input -->
       <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-hide-small" title="Decrease" @click="post_index--">
         <i class="fa fa-arrow-up "></i>
       </button>
+      <!-- Multis input -->
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Multis">
           <i class="fa fa-file-text  "></i>
@@ -61,6 +64,7 @@
           </template>
         </div>
       </div>
+      <!-- Top time sort input -->
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Top time sort">
           <i class="fa fa-clock-o "></i><a>{{ params['t'] }}</a>
@@ -71,18 +75,20 @@
           </template>
         </div>
       </div>
+      <!-- Type sort input -->
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Type sort">
           <i class="fa fa-sort"></i><a></a>{{ params['sort'] }}</a>
         </button>     
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
           <!-- TODO disable best when multi-->
-          <button class="w3-bar-item w3-button" tiltle="Best" @click="set_sort('best')">Best</button>
+          <button class="w3-bar-item w3-button" tiltle="Top" @click="set_sort('top')">Top</button>
           <button class="w3-bar-item w3-button" tiltle="Hot" @click="set_sort('hot')">Hot</button>
           <button class="w3-bar-item w3-button" tiltle="New" @click="set_sort('new')">New</button>
-          <button class="w3-bar-item w3-button" tiltle="Top" @click="set_sort('top')">Top</button>
+          <button v-if="params['m'] == ''" class="w3-bar-item w3-button" tiltle="Best" @click="set_sort('best')">Best</button>
         </div>
       </div>
+      <!-- Filters input -->
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Filters">
           <i class="fa fa-filter"></i><a>{{ params['filters'] }}</a>
@@ -92,21 +98,27 @@
           <button class="w3-bar-item w3-button" tiltle="Yes" @click="set_filters(true)">Yes</button>
         </div>
       </div>
+      <!-- Title info -->
       <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="Title">
         <i class="fa fa-header"></i><a>{{ posts[post_index].post_title }}</a>
       </div>
+      <!-- Subreddit info -->
       <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="Subreddit">
         <i class="fa fa-subway"></i><a v-bind:href="'https://old.reddit.com/r/'+posts[post_index].subreddit_name">{{ posts[post_index].subreddit_name }}</a>
       </div>
+      <!-- User link -->
       <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="User">
         <i class="fa fa-user"></i><a v-bind:href="'https://old.reddit.com/u/'+posts[post_index].user_name">{{ posts[post_index].user_name }}</a>
       </div>
+      <!-- Created info -->
       <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="Created">
         <i class="fa fa-calendar"></i><a>{{ posts[post_index].post_created_utc }}</a>
       </div>
+      <!-- Score info -->
       <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="Score">
         <i class="fa fa-star"></i><a>{{ posts[post_index].post_score }}</a>
       </div>
+      <!-- Post link -->
       <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="Post">
         <i class="fa fa-star"></i><a target="_blank" v-bind:href="'https://old.reddit.com/comments/'+posts[post_index].link_id">Post</a>
       </div>
@@ -147,7 +159,7 @@
           adding: false,
           params: {
             after: '',
-            sort: 'best',
+            sort: 'top',
             t: 'all',
             r: '',
             m: '',
@@ -273,6 +285,12 @@
           // TODO then for catching emtpy
           let new_items = await (await fetch(new_query, {cache: "no-store"})).json();
           console.log('new_items:', JSON.stringify(new_items, null, 4))
+
+          // wil also check for "", undefined, false, 0, or NaN
+          if (new_items == null) {
+            console.log('invalid query:', new_query);
+            return
+          }
 
           // empty list
           if (new_items.length == 0) {

@@ -84,7 +84,12 @@ async def redgifs(url: str = ''):
             return ""
         api_data = await api_response.json()
         api_response.close()
-        logger.debug(f"api_data.gif.urls.hd: {api_data['gif']['urls']['hd']}")
+        logger.debug(f"api_data.gif.urls: {api_data}")
+        url = None
+        try:
+            url = api_data['gif']['urls']['hd']
+        except:
+            url = api_data['gif']['urls']['sd']
 
         # gif
         gif_headers = {
@@ -94,7 +99,7 @@ async def redgifs(url: str = ''):
             'x-customheader': f'https://www.redgifs.com/watch/{video_id}',
             'authorization': f'Bearer {auth_data['token']}',
         }
-        gif_response = await session.get(api_data['gif']['urls']['hd'], headers=gif_headers)
+        gif_response = await session.get(url, headers=gif_headers)
         logger.debug(f"gif_response.status: {gif_response.status}")
         if gif_response.status != 200:
             await session.close()
