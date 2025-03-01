@@ -1,12 +1,11 @@
 import logging
 
-import praw
-import praw.models
+import asyncpraw.models
 import demoji
 
 logger = logging.getLogger(__name__)
 
-def filter(post: praw.models.Submission, post_id, post_title: str, post_url) -> bool:
+def filter(post: asyncpraw.models.Submission, post_id, post_title: str, post_url) -> bool:
 
     # Check gif
     if 'gif' in post_url:

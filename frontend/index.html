@@ -115,12 +115,12 @@
         <i class="fa fa-calendar"></i><a>{{ posts[post_index].post_created_utc }}</a>
       </div>
       <!-- Score info -->
-      <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="Score">
-        <i class="fa fa-star"></i><a>{{ posts[post_index].post_score }}</a>
-      </div>
+      <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-hide-small" title="Score" @click="upvote">
+        <i class="fa fa-star "></i><a>{{ posts[post_index].post_score }}</a>
+      </button>
       <!-- Post link -->
       <div class="w3-bar-item w3-padding-large w3-hover-white w3-hide-small" title="Post">
-        <i class="fa fa-star"></i><a target="_blank" v-bind:href="'https://old.reddit.com/comments/'+posts[post_index].link_id">Post</a>
+        <i class="fa fa-star"></i><a target="_blank" v-bind:href="'https://old.reddit.com/comments/'+posts[post_index].post_id">Post</a>
       </div>
     </div>
 
@@ -140,7 +140,7 @@
       data() {
         return {
           posts: [{
-            link_id: '',
+            post_id: '',
             user_id: '',
             user_name: '',
             subreddit_id: '',
@@ -212,7 +212,7 @@
         
       async reset_posts() {
         this.posts = [{
-          link_id: '',
+          post_id: '',
           user_id: '',
           user_name: '',
           subreddit_id: '',
@@ -275,7 +275,7 @@
 
           // get latest post
           if (this.posts.length > 1) {
-            this.params.after = `t3_${this.posts.at(-1).link_id}`;
+            this.params.after = `t3_${this.posts.at(-1).post_id}`;
           }
           const search_params = new URLSearchParams(this.params);
           const new_query = './api/?'+search_params;
@@ -338,7 +338,16 @@
         async on_ended() {
           console.log('post video ended, autoscrolling');
           this.increase_post_index();
-        }
+        },
+        
+        async upvote() {
+          console.log('upvoting');
+          const succes = await (await fetch('./api/upvote?post_id='+this.posts[this.post_index].post_id, {cache: "no-store"})).json();
+          console.log('upvoting results:', succes);
+          if(succes) {
+            this.posts[this.post_index].post_score++;
+          }
+        },
       },
 
       // Lifecycle hooks are called at different stages

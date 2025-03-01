@@ -5,6 +5,7 @@ import aiohttp
 import fastapi
 from fastapi import Response
 from fastapi_cache.decorator import cache
+from asyncpraw import models
 
 from . import config
 from . import links
@@ -18,11 +19,12 @@ router = fastapi.APIRouter(
 @router.get("/multis")
 @cache(expire=86400)
 async def multis():
+    logger.info(f"GET /api/multis")
     return [m.display_name for m in await reddit.user.multireddits()]
 
 @router.get("/redgifs")
 async def redgifs(url: str = ''):
-    logger.debug(f"redgifs url: {url}")
+    logger.info(f"GET /api/redgifs?url={url}")
     
     if 'watch/' in url:
         video_id = url.split("watch/")[1].split("/")[0].split("#")[0]
@@ -116,7 +118,7 @@ async def redgifs(url: str = ''):
 
 @router.get("/")
 @cache(expire=86400)
-async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: str = '', filters: bool = True):
+async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: str = '', filters: bool = False):
     """
     after: t3_link id
     sort: best, hot, new, rising, controversial, top
@@ -124,6 +126,7 @@ async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: 
     r: subreddit
     m: multireddit
     """
+    logger.info(f"GET /api/?after={after}&sort={sort}&t={t}&r={r}&m={m}&filters={filters}")
     
     params = {}
 
@@ -174,3 +177,13 @@ async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: 
     
     logger.debug(posts)
     return posts
+
+@router.get("/upvote")
+async def upvote(post_id: str = ''):
+    logger.info(f"GET /api/upvote?post_id={post_id}")
+    try:
+        post = models.Submission(reddit, post_id)
+        await post.upvote()
+        return True
+    except:
+        return False
