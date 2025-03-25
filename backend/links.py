@@ -35,31 +35,33 @@ async def parse_links(post: models.Submission, after: str, enable_filters):
         #TODO save post_url and check duplicates
         
         # this may require extra api requests
-        sub_name = ''
+        sub_name = str(post.subreddit)
         sub_id = ''
         try:
+            #logger.debug(f"{post_id} post.subreddit {post.subreddit}")
             r: models.Subreddit = post.subreddit
             #await r.load()
             #sub_name = r.display_name
             #sub_name = r.name
-            sub_id = r.id[3:]
+            #sub_id = r.id[3:]
         except:
-            logger.exception(f"{post_id} Probably deleted/removed subreddit")
+            logger.exception(f"{post_id} Probably deleted/removed subreddit {post.subreddit}")
             #return None
 
         # this may require extra api requests
-        user_name = ''
+        user_name = str(post.author)
         user_id = ''
         user_subreddit = None
         try:
+            #logger.debug(f"{post_id} post.author {post.author}")
             u: models.Redditor = post.author
             #await u.load()
             #user_name = u.name
-            user_id = u.id[3:]
+            #user_id = u.id[3:]
             #user_subreddit = u.subreddit
             #logger.debug(f"{post_id} User subreddit {user_subreddit}")
         except:
-            logger.exception(f"{post_id} Probably deleted/removed user")
+            logger.exception(f"{post_id} Probably deleted/removed user {post.author}")
             #return None
         
         # filter
@@ -100,7 +102,7 @@ async def parse_links(post: models.Submission, after: str, enable_filters):
 
         # Post link is png image
         elif 'reddit.com' in post_url and 'gallery' in post_url:
-            logger.debug(json.dumps(post.media_metadata))
+            #logger.debug(json.dumps(post.media_metadata))
             posts = []
             for i, (media_id, media) in enumerate(post.media_metadata.items()):
                 if media['e'] == 'Image':
@@ -122,6 +124,27 @@ async def parse_links(post: models.Submission, after: str, enable_filters):
                         'direct_type': direct_type,
                         'direct_poster': direct_poster,
                     })
+                elif media['e'] == 'Image':
+                    # TODO multiple posts
+                    direct_url = './audio/5-seconds-of-silence.mp3'
+                    direct_type = ''
+                    direct_poster = media['s']['u']
+                    posts.append({
+                        'post_id': post_id,
+                        'usesub_id': user_id,
+                        'usesub_name': user_name,
+                        'subreddit_id': sub_id,
+                        'subreddit_name': sub_name,
+                        'post_title': post_title_utf8,
+                        'post_url': post_url,
+                        'post_created_utc': datetime.datetime.fromtimestamp(int(post.created_utc), datetime.UTC).strftime("%Y-%m-%d %H:%M:%S"),
+                        'post_score': post_score,
+                        'direct_url': direct_url,
+                        'direct_type': direct_type,
+                        'direct_poster': direct_poster,
+                    })
+                else:
+                    logger.debug(json.dumps(media))
             return posts
         
         # get mp4 preview if gif
