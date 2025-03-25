@@ -39,8 +39,8 @@ async def parse_links(post: models.Submission, after: str, enable_filters):
         sub_id = ''
         try:
             r: models.Subreddit = post.subreddit
-            await r.load()
-            sub_name = r.display_name
+            #await r.load()
+            #sub_name = r.display_name
             #sub_name = r.name
             sub_id = r.id[3:]
         except:
@@ -53,11 +53,11 @@ async def parse_links(post: models.Submission, after: str, enable_filters):
         user_subreddit = None
         try:
             u: models.Redditor = post.author
-            await u.load()
-            user_name = u.name
+            #await u.load()
+            #user_name = u.name
             user_id = u.id[3:]
-            user_subreddit = u.subreddit
-            logger.debug(f"{post_id} User subreddit {user_subreddit}")
+            #user_subreddit = u.subreddit
+            #logger.debug(f"{post_id} User subreddit {user_subreddit}")
         except:
             logger.exception(f"{post_id} Probably deleted/removed user")
             #return None
@@ -71,7 +71,7 @@ async def parse_links(post: models.Submission, after: str, enable_filters):
         # Check for non utf8 characters
         post_title_utf8 = post_title.encode('utf8', 'ignore').decode('utf8')
         if len(post_title_utf8) < len(post_title):
-            logger.warn(f"{post_id} Warning post has non utf8 characters")
+            logger.warning(f"{post_id} Warning post has non utf8 characters")
 
         # download
         direct_url = post_url
@@ -100,7 +100,7 @@ async def parse_links(post: models.Submission, after: str, enable_filters):
 
         # Post link is png image
         elif 'reddit.com' in post_url and 'gallery' in post_url:
-            #logger.debug(json.dumps(post.media_metadata))
+            logger.debug(json.dumps(post.media_metadata))
             posts = []
             for i, (media_id, media) in enumerate(post.media_metadata.items()):
                 if media['e'] == 'Image':
