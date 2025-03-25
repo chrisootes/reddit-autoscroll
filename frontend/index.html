@@ -55,7 +55,7 @@
           <i class="fa fa-file-text  "></i>
           <a v-if="!!params['m']">{{ params['m'] }}</a>
           <a v-else>front</a>
-        </button>     
+        </button>
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
           <button class="w3-bar-item w3-button" @click="set_front">front</button>
           <template v-for="multi in multis">
@@ -67,7 +67,7 @@
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Top time sort">
           <i class="fa fa-clock-o "></i><a>{{ params['t'] }}</a>
-        </button>     
+        </button>
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
           <template v-for="timesort in timesorts">
             <button class="w3-bar-item w3-button" :title="timesort" @click="set_timesort(timesort)">{{timesort}}</button>
@@ -78,7 +78,7 @@
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Type sort">
           <i class="fa fa-sort"></i><a></a>{{ params['sort'] }}</a>
-        </button>     
+        </button>
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
           <!-- TODO disable best when multi-->
           <button class="w3-bar-item w3-button" tiltle="Top" @click="set_sort('top')">Top</button>
@@ -91,7 +91,7 @@
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Filters">
           <i class="fa fa-filter"></i><a>{{ params['filters'] }}</a>
-        </button>     
+        </button>
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
           <button class="w3-bar-item w3-button" tiltle="No" @click="set_filters(false)">No</button>
           <button class="w3-bar-item w3-button" tiltle="Yes" @click="set_filters(true)">Yes</button>
@@ -177,7 +177,7 @@
           console.log('direct_url:', this.posts[new_index].direct_url);
           console.log('direct_type:', this.posts[new_index].direct_type);
           console.log('direct_poster:', this.posts[new_index].direct_poster);
-          
+
           // fix some weird clone proxy error when playing dash mpd playlist
           const rawvideoplayer = toRaw(this.videoplayer);
 
@@ -188,44 +188,50 @@
             console.log('paused because empty url');
             rawvideoplayer.pause()
 
-          // redgifs
+            // redgifs
           } else if (this.posts[new_index].direct_url.includes('redgifs')) {
             const redgifs_url = "./api/redgifs?url=" + encodeURIComponent(this.posts[new_index].direct_url);
             console.log('redgifs_url:', redgifs_url);
-            rawvideoplayer.src({type: 'video/mp4', src: redgifs_url})
+            rawvideoplayer.src({ 
+              type: 'video/mp4',
+              src: redgifs_url
+            })
 
-          // unknown type
+            // unknown type
           } else if (this.posts[new_index].direct_type == '') {
             rawvideoplayer.src(this.posts[new_index].direct_url);
 
-          // known type
+            // known type
           } else {
-            rawvideoplayer.src({type: this.posts[new_index].direct_type, src: this.posts[new_index].direct_url})
+            rawvideoplayer.src({ 
+              type: this.posts[new_index].direct_type,
+              src: this.posts[new_index].direct_url 
+            })
           }
-          
+
         }
       },
       // Methods are functions that mutate state and trigger updates.
       // They can be bound as event handlers in templates.
       methods: {
-        
-      async reset_posts() {
-        this.posts = [{
-          post_id: '',
-          user_id: '',
-          user_name: '',
-          subreddit_id: '',
-          subreddit_name: '',
-          post_title: '',
-          post_url: '',
-          post_created_utc: '',
-          post_score: '',
-          direct_url: '',
-          direct_type: '',
-          direct_poster: './img/black_pixel.png',
-        }];
-        this.post_index = 0
-      },
+
+        async reset_posts() {
+          this.posts = [{
+            post_id: '',
+            user_id: '',
+            user_name: '',
+            subreddit_id: '',
+            subreddit_name: '',
+            post_title: '',
+            post_url: '',
+            post_created_utc: '',
+            post_score: '',
+            direct_url: '',
+            direct_type: '',
+            direct_poster: './img/black_pixel.png',
+          }];
+          this.post_index = 0
+        },
 
         async set_front() {
           this.params.r = '';
@@ -244,12 +250,12 @@
           this.reset_posts();
         },
 
-        async set_sort(sort) {    
+        async set_sort(sort) {
           this.params.sort = sort;
           this.reset_posts();
         },
 
-        async set_filters(filters) {    
+        async set_filters(filters) {
           this.params.filters = filters;
           this.reset_posts();
         },
@@ -277,12 +283,12 @@
             this.params.after = `t3_${this.posts.at(-1).post_id}`;
           }
           const search_params = new URLSearchParams(this.params);
-          const new_query = './api/?'+search_params;
+          const new_query = './api/?' + search_params;
 
           console.log('new_query:', new_query);
           // TODO loading
           // TODO then for catching emtpy
-          let new_items = await (await fetch(new_query, {cache: "no-store"})).json();
+          let new_items = await (await fetch(new_query, { cache: "no-store" })).json();
           console.log('new_items:', JSON.stringify(new_items, null, 4))
 
           // wil also check for "", undefined, false, 0, or NaN
@@ -303,7 +309,7 @@
 
           // check if stuck waiting on new links
           let stuck = false;
-          if (this.post_index == (this.posts.length-1)) {
+          if (this.post_index == (this.posts.length - 1)) {
             stuck = true;
           }
 
@@ -311,7 +317,7 @@
           this.posts.push(...new_items);
           this.adding = false;
           console.log('posts.length:', this.posts.length);
-          
+
           // resume
           if (stuck) {
             console.log('stuck, so trying to increasing post index');
@@ -322,7 +328,7 @@
         async increase_post_index() {
           console.log('increasing post_index, current:', this.post_index);
           // only increase if there are new posts
-          if (this.post_index < (this.posts.length-1)) {
+          if (this.post_index < (this.posts.length - 1)) {
             this.post_index++;
           } else {
             console.log('stuck, no new posts and not increasing');
@@ -333,17 +339,17 @@
             this.add_posts();
           }
         },
-        
+
         async on_ended() {
           console.log('post video ended, autoscrolling');
           this.increase_post_index();
         },
-        
+
         async upvote() {
           console.log('upvoting');
-          const succes = await (await fetch('./api/upvote?post_id='+this.posts[this.post_index].post_id, {cache: "no-store"})).json();
+          const succes = await (await fetch('./api/upvote?post_id=' + this.posts[this.post_index].post_id, { cache: "no-store" })).json();
           console.log('upvoting results:', succes);
-          if(succes) {
+          if (succes) {
             this.posts[this.post_index].post_score++;
           }
         },
@@ -355,7 +361,7 @@
       async mounted() {
         this.multis.push(...await (await fetch('./api/multis')).json());
         console.log('Loading the player.')
-        this.videoplayer = videojs(this.$refs.videoplayer, {fill: true, autoplay: true, controls: true}, () => {
+        this.videoplayer = videojs(this.$refs.videoplayer, { fill: true, autoplay: true, controls: true }, () => {
           console.log('onPlayerReady');
         });
         this.videoplayer.on('ended', this.on_ended);
