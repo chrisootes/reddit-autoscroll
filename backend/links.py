@@ -112,8 +112,8 @@ async def parse_links(post: models.Submission, after: str, enable_filters):
                     direct_poster = media['s']['u']
                     posts.append({
                         'post_id': post_id,
-                        'usesub_id': user_id,
-                        'usesub_name': user_name,
+                        'user_id': user_id,
+                        'user_name': user_name,
                         'subreddit_id': sub_id,
                         'subreddit_name': sub_name,
                         'post_title': post_title_utf8,
@@ -124,15 +124,15 @@ async def parse_links(post: models.Submission, after: str, enable_filters):
                         'direct_type': direct_type,
                         'direct_poster': direct_poster,
                     })
-                elif media['e'] == 'Image':
+                elif media['e'] == 'AnimatedImage':
                     # TODO multiple posts
-                    direct_url = './audio/5-seconds-of-silence.mp3'
-                    direct_type = ''
-                    direct_poster = media['s']['u']
+                    direct_url = media['s']['mp4']
+                    direct_type = 'video/mp4'
+                    direct_poster = './img/black_pixel.png'
                     posts.append({
                         'post_id': post_id,
-                        'usesub_id': user_id,
-                        'usesub_name': user_name,
+                        'user_id': user_id,
+                        'user_name': user_name,
                         'subreddit_id': sub_id,
                         'subreddit_name': sub_name,
                         'post_title': post_title_utf8,
@@ -176,8 +176,8 @@ async def parse_links(post: models.Submission, after: str, enable_filters):
 
         return  [{
             'post_id': post_id,
-            'usesub_id': user_id,
-            'usesub_name': user_name,
+            'user_id': user_id,
+            'user_name': user_name,
             'subreddit_id': sub_id,
             'subreddit_name': sub_name,
             'post_title': post_title_utf8,
