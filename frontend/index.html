@@ -49,15 +49,19 @@
       <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-hide-small" title="Decrease" @click="post_index--">
         <i class="fa fa-arrow-up "></i>
       </button>
+      <!-- Subreddit input -->
+      <input class="w3-bar-item w3-padding-large w3-hover-white" v-model="subreddit" placeholder="edit me" />
       <!-- Multis input -->
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-padding-large w3-hover-white w3-mobile" title="Multis">
           <i class="fa fa-file-text  "></i>
           <a v-if="!!params['m']">{{ params['m'] }}</a>
+          <a v-else-if="!!params['r']">{{ params['r'] }}</a>
           <a v-else>front</a>
         </button>
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
           <button class="w3-bar-item w3-button" @click="set_front">front</button>
+          <button class="w3-bar-item w3-button" @click="set_subreddit(subreddit)">{{subreddit}}</button>
           <template v-for="multi in multis">
             <button class="w3-bar-item w3-button" :title="multi" @click="set_multi(multi)">{{multi}}</button>
           </template>
@@ -238,6 +242,12 @@
         async set_multi(multi) {
           this.params.r = '';
           this.params.m = multi;
+          this.reset_posts();
+        },
+
+        async set_subreddit(subreddit) {
+          this.params.r = subreddit;
+          this.params.m = '';
           this.reset_posts();
         },
 
