@@ -50,7 +50,7 @@
         <i class="fa fa-arrow-up "></i>
       </button>
       <!-- Subreddit input -->
-      <input class="w3-bar-item w3-hover-white" v-model="subreddit" placeholder="edit me" />
+      <input class="w3-bar-item w3-hover-white" v-model="subreddit_input" placeholder="edit me" />
       <!-- Multis input -->
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-bar-item w3-button w3-hover-white w3-mobile" title="Multis">
@@ -61,7 +61,7 @@
         </button>
         <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
           <button class="w3-bar-item w3-button" @click="set_front">front</button>
-          <button class="w3-bar-item w3-button" @click="set_subreddit(subreddit)">{{subreddit}}</button>
+          <button class="w3-bar-item w3-button" @click="set_subreddit(subreddit_input)">{{subreddit_input}}</button>
           <template v-for="multi in multis">
             <button class="w3-bar-item w3-button" :title="multi" @click="set_multi(multi)">{{multi}}</button>
           </template>
@@ -101,6 +101,14 @@
           <button class="w3-bar-item w3-button" tiltle="Yes" @click="set_filters(true)">Yes</button>
         </div>
       </div>
+      <!-- Score info -->
+      <button class="w3-bar-item w3-button w3-hover-white w3-hide-small" title="Score" @click="upvote">
+        <i class="fa fa-star "></i><a>{{ posts[post_index].post_score }}</a>
+      </button>
+      <!-- Created info -->
+      <div class="w3-bar-item w3-hover-white w3-hide-small" title="Created">
+        <i class="fa fa-calendar"></i><a>{{ posts[post_index].post_created_utc }}</a>
+      </div>
       <!-- Subreddit info -->
       <div class="w3-bar-item w3-hover-white w3-hide-small" title="Subreddit">
         <i class="fa fa-subway"></i><a target="_blank" v-bind:href="'https://old.reddit.com/r/'+posts[post_index].subreddit_name">{{ posts[post_index].subreddit_name }}</a>
@@ -109,14 +117,6 @@
       <div class="w3-bar-item w3-hover-white w3-hide-small" title="User">
         <i class="fa fa-user"></i><a target="_blank" v-bind:href="'https://old.reddit.com/u/'+posts[post_index].user_name">{{ posts[post_index].user_name }}</a>
       </div>
-      <!-- Created info -->
-      <div class="w3-bar-item w3-hover-white w3-hide-small" title="Created">
-        <i class="fa fa-calendar"></i><a>{{ posts[post_index].post_created_utc }}</a>
-      </div>
-      <!-- Score info -->
-      <button class="w3-bar-item w3-button w3-hover-white w3-hide-small" title="Score" @click="upvote">
-        <i class="fa fa-star "></i><a>{{ posts[post_index].post_score }}</a>
-      </button>
       <!-- Title info an post link -->
       <div class="w3-bar-item w3-hover-white w3-hide-small" title="Title">
         <i class="fa fa-header"></i><a target="_blank" v-bind:href="'https://old.reddit.com/comments/'+posts[post_index].post_id">{{ posts[post_index].post_title }}</a>
@@ -166,7 +166,8 @@
           },
           multis: [],
           timesorts: ['hour', 'day', 'week', 'month', 'year', 'all'],
-          ended: false
+          ended: false,
+          subreddit_input: null
         }
       },
 
