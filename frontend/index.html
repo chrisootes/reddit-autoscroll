@@ -52,14 +52,14 @@
       <!-- Subreddit input -->
       <input class="w3-bar-item w3-hover-white" v-model="subreddit_input" placeholder="edit me" />
       <!-- Multis input -->
-      <div class="w3-dropdown-hover w3-hide-small">
+      <div class="w3-dropdown-hover w3-hide-small" style="width: 300px;">
         <button class="w3-bar-item w3-button w3-hover-white w3-mobile" title="Multis">
           <i class="fa fa-file-text  "></i>
           <a v-if="!!params['m']">{{ params['m'] }}</a>
           <a v-else-if="!!params['r']">{{ params['r'] }}</a>
           <a v-else>front</a>
         </button>
-        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
+        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width: 300px">
           <button class="w3-bar-item w3-button" @click="set_front">front</button>
           <button class="w3-bar-item w3-button" @click="set_subreddit(subreddit_input)">{{subreddit_input}}</button>
           <template v-for="multi in multis">
@@ -68,22 +68,22 @@
         </div>
       </div>
       <!-- Top time sort input -->
-      <div class="w3-dropdown-hover w3-hide-small">
+      <div class="w3-dropdown-hover w3-hide-small" style="width: 100px;">
         <button class="w3-bar-item w3-button w3-hover-white w3-mobile" title="Top time sort">
           <i class="fa fa-clock-o "></i><a>{{ params['t'] }}</a>
         </button>
-        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
+        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width: 100px">
           <template v-for="timesort in timesorts">
             <button class="w3-bar-item w3-button" :title="timesort" @click="set_timesort(timesort)">{{timesort}}</button>
           </template>
         </div>
       </div>
       <!-- Type sort input -->
-      <div class="w3-dropdown-hover w3-hide-small">
+      <div class="w3-dropdown-hover w3-hide-small" style="width: 100px;">
         <button class="w3-bar-item w3-button w3-hover-white w3-mobile" title="Type sort">
           <i class="fa fa-sort"></i><a></a>{{ params['sort'] }}</a>
         </button>
-        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
+        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width: 100px">
           <!-- TODO disable best when multi-->
           <button class="w3-bar-item w3-button" tiltle="Top" @click="set_sort('top')">Top</button>
           <button class="w3-bar-item w3-button" tiltle="Hot" @click="set_sort('hot')">Hot</button>
@@ -92,33 +92,33 @@
         </div>
       </div>
       <!-- Filters input -->
-      <div class="w3-dropdown-hover w3-hide-small">
+      <div class="w3-dropdown-hover w3-hide-small" style="width: 100px;">
         <button class="w3-bar-item w3-button w3-hover-white w3-mobile" title="Filters">
           <i class="fa fa-filter"></i><a>{{ params['filters'] }}</a>
         </button>
-        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width:300px">
+        <div class="w3-dropdown-content w3-card-4 w3-bar-block" style="width: 100px">
           <button class="w3-bar-item w3-button" tiltle="No" @click="set_filters(false)">No</button>
           <button class="w3-bar-item w3-button" tiltle="Yes" @click="set_filters(true)">Yes</button>
         </div>
       </div>
       <!-- Score info -->
-      <button class="w3-bar-item w3-button w3-hover-white w3-hide-small" title="Score" @click="upvote">
+      <button class="w3-bar-item w3-button w3-hover-white w3-hide-small" style="width: 100px;" title="Score" @click="upvote">
         <i class="fa fa-star "></i><a>{{ posts[post_index].post_score }}</a>
       </button>
       <!-- Created info -->
-      <div class="w3-bar-item w3-hover-white w3-hide-small" title="Created">
+      <div class="w3-bar-item w3-hover-white w3-hide-small" style="width: 220px;">
         <i class="fa fa-calendar"></i><a>{{ posts[post_index].post_created_utc }}</a>
       </div>
       <!-- Subreddit info -->
-      <div class="w3-bar-item w3-hover-white w3-hide-small" title="Subreddit">
+      <div class="w3-bar-item w3-hover-white w3-hide-small">
         <i class="fa fa-subway"></i><a target="_blank" v-bind:href="'https://old.reddit.com/r/'+posts[post_index].subreddit_name">{{ posts[post_index].subreddit_name }}</a>
       </div>
       <!-- User link -->
-      <div class="w3-bar-item w3-hover-white w3-hide-small" title="User">
+      <div class="w3-bar-item w3-hover-white w3-hide-small">
         <i class="fa fa-user"></i><a target="_blank" v-bind:href="'https://old.reddit.com/u/'+posts[post_index].user_name">{{ posts[post_index].user_name }}</a>
       </div>
       <!-- Title info an post link -->
-      <div class="w3-bar-item w3-hover-white w3-hide-small" title="Title">
+      <div class="w3-bar-item w3-hover-white w3-hide-small">
         <i class="fa fa-header"></i><a target="_blank" v-bind:href="'https://old.reddit.com/comments/'+posts[post_index].post_id">{{ posts[post_index].post_title }}</a>
       </div>
     </div>
