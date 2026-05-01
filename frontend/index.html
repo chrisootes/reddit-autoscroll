@@ -102,7 +102,7 @@
         </div>
       </div>
       <!-- Score info -->
-      <button class="w3-bar-item w3-button w3-hover-white w3-hide-small" style="width: 100px;" title="Score" @click="upvote">
+      <button class="w3-bar-item w3-button w3-hover-white w3-hide-small" style="width: 100px;" title="Score" @click="upvote" :disabled="upvote_disabled == true">
         <i class="fa fa-star "></i><a>{{ posts[post_index].post_score }}</a>
       </button>
       <!-- Created info -->
@@ -167,7 +167,8 @@
           multis: [],
           timesorts: ['hour', 'day', 'week', 'month', 'year', 'all'],
           ended: false,
-          subreddit_input: null
+          subreddit_input: null,
+          upvote_disabled: false
         }
       },
 
@@ -189,7 +190,7 @@
             console.log('paused because empty url');
             rawvideoplayer.pause()
 
-            // redgifs
+          // redgifs
           } else if (this.posts[new_index].direct_url.includes('redgifs')) {
             const redgifs_url = "./api/redgifs?url=" + encodeURIComponent(this.posts[new_index].direct_url);
             console.log('redgifs_url:', redgifs_url);
@@ -198,17 +199,19 @@
               src: redgifs_url
             })
 
-            // unknown type
+          // unknown type
           } else if (this.posts[new_index].direct_type == '') {
             rawvideoplayer.src(this.posts[new_index].direct_url);
 
-            // known type
+          // known type
           } else {
             rawvideoplayer.src({ 
               type: this.posts[new_index].direct_type,
               src: this.posts[new_index].direct_url 
             })
           }
+          // reenable voting
+          this.upvote_disabled = false;
 
         }
       },
@@ -359,6 +362,7 @@
           if (succes) {
             this.posts[this.post_index].post_score++;
           }
+          this.upvote_disabled = true;
         },
       },
 

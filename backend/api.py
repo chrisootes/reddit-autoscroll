@@ -9,9 +9,11 @@ from asyncpraw import models
 
 from . import config
 from . import links
+from .reddit import Reddit
 
+# TODO not use global
+reddit = Reddit()
 logger = logging.getLogger(__name__)
-reddit = None
 router = fastapi.APIRouter(
     prefix="/api"
 )
@@ -20,6 +22,7 @@ router = fastapi.APIRouter(
 @cache(expire=86400)
 async def multis():
     logger.info(f"GET /api/multis")
+    logger.info(f"type: {type(reddit)}")
     return [m.display_name for m in await reddit.user.multireddits()]
 
 @router.get("/redgifs")
@@ -87,7 +90,7 @@ async def redgifs(url: str = ''):
         api_data = await api_response.json()
         api_response.close()
         logger.debug(f"api_data.gif.urls: {api_data}")
-        url = None
+        url = ''
         try:
             url = api_data['gif']['urls']['hd']
         except:
@@ -128,7 +131,7 @@ async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: 
     """
     logger.info(f"GET /api/?after={after}&sort={sort}&t={t}&r={r}&m={m}&filters={filters}")
     
-    params = {}
+    params: dict[str, str | int] = {}
 
     # next page
     if after != '':
@@ -137,10 +140,9 @@ async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: 
     # valid sort time
     if t not in ['hour', 'day', 'week', 'month', 'year', 'all']:
         return None
-
+    
     # front
     subreddit = reddit.front
-    
     # subreddit
     if r != '':
         subreddit = await reddit.subreddit(r)
@@ -150,7 +152,7 @@ async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: 
             if m == multireddit.display_name:
                 subreddit = multireddit
         # TODO check if multi is found
-    
+        
     generator = []
     if (sort == '' or sort == 'best') and m == '':
         generator = subreddit.best(limit=20, params=params)
@@ -186,4 +188,5 @@ async def upvote(post_id: str = ''):
         await post.upvote()
         return True
     except:
+        logger.exception("Failed to upvote")
         return False
