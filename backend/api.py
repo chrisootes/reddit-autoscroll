@@ -117,7 +117,7 @@ async def redgifs(url: str = ''):
         return Response(content=gif_data, media_type="video/mp4")
     except:
         await session.close()
-        logger.exception("execption in /api/redgifs")
+        logger.exception("exception in /api/redgifs")
 
 @router.get("/")
 @cache(expire=86400)
