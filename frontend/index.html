@@ -302,21 +302,59 @@
             return
           }
 
+          // remove duplicates
+          let original_length = new_items.length;
+          new_items = new_items.filter(
+            (element_first, index_first) => {
+              let keep = true;
+
+              // check new_items
+              // this wil check of redit api did not gave multiple posts with same url within this query
+              let found1 = new_items.find(
+                (element_second, index_second) => {
+                  return element_second.post_url.localeCompare(element_first.post_url) === 0 && index_second != index_first;
+                }
+              );
+              //console.log('found1:', found1);
+              if (found1 !== undefined) {
+                keep = false;
+              };
+              //console.log('keep1:', keep);
+
+              // check this.posts
+              // this will check if we not already had a post with this url cached from a previous queries
+              let found2 = this.posts.find(
+                (old_post) => {
+                  return old_post.post_url.localeCompare(element_first.post_url) === 0;
+                }
+              );
+              //console.log('found2:', found2);
+              if (found2 !== undefined) {
+                keep = false;
+              };
+              //console.log('keep2:', keep);
+
+              return keep;
+            }
+          );
+          console.log('new_items filtered from', original_length, '->', new_items.length);
+
           // empty list
           if (new_items.length == 0) {
+            console.log('no new items found');
             this.adding = false;
             this.ended = true;
             // TODO show on gui
             return
           }
 
-          // remove duplicates
-          new_items = new_items.filter((item, index, self) => index === self.findIndex((t) => t.post_id === item.post_id));
-
           // push has Array Change Detection on component properties
           this.posts.push(...new_items);
           this.adding = false;
           console.log('posts.length:', this.posts.length);
+
+          // debuging global
+          window.posts = this.posts;
 
         },
 
@@ -349,8 +387,8 @@
               console.log('ended, so not adding new posts');
               return
             }
-            if (this.posts.length > (this.post_index + 100)) {
-              console.log('filled up yo ', this.posts.length, ' and currently at', this.post_index, ', so not adding new posts');
+            if (this.posts.length > (this.post_index + 10)) {
+              console.log('filled up to', this.posts.length, 'and currently at', this.post_index, ' so not adding new posts');
               return
             }
             await this.add_posts();
