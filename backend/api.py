@@ -121,7 +121,7 @@ async def redgifs(url: str = ''):
 
 @router.get("/")
 @cache(expire=86400)
-async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: str = '', filters: bool = False):
+async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: str = '', filters: bool = False, limit: int = 20):
     """
     after: t3_link id
     sort: best, hot, new, rising, controversial, top
@@ -155,17 +155,17 @@ async def root(after: str = '', sort: str = '', t: str = 'all', r: str = '', m: 
         
     generator = []
     if (sort == '' or sort == 'best') and m == '':
-        generator = subreddit.best(limit=20, params=params)
+        generator = subreddit.best(limit=limit, params=params)
     elif sort == 'hot':
-        generator = subreddit.hot(limit=20, params=params)
+        generator = subreddit.hot(limit=limit, params=params)
     elif sort == 'new':
-        generator = subreddit.new(limit=20, params=params)
+        generator = subreddit.new(limit=limit, params=params)
     elif sort == 'rising':
-        generator = subreddit.rising(limit=20, params=params)
+        generator = subreddit.rising(limit=limit, params=params)
     elif sort == 'controversial':
-        generator = subreddit.controversial(limit=20, params=params, time_filter=t)
+        generator = subreddit.controversial(limit=limit, params=params, time_filter=t)
     elif sort == 'top':
-        generator = subreddit.top(limit=20, params=params, time_filter=t)
+        generator = subreddit.top(limit=limit, params=params, time_filter=t)
     else:
         return None
 

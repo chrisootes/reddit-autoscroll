@@ -161,7 +161,8 @@
             t: 'all',
             r: '',
             m: '',
-            filters: false
+            filters: false,
+            limit: 100
           },
           multis: [],
           timesorts: ['hour', 'day', 'week', 'month', 'year', 'all'],
@@ -273,11 +274,6 @@
           // ask backend for more links
           console.log('adding new posts');
 
-          if (this.ended) {
-            console.log('ended, so not adding new posts');
-            return
-          }
-
           // block adding async
           if (this.adding) {
             console.log('already adding new posts');
@@ -314,38 +310,50 @@
             return
           }
 
-          // TODO remove duplicates
-
-          // check if stuck waiting on new links
-          let stuck = false;
-          if (this.post_index == (this.posts.length - 1)) {
-            stuck = true;
-          }
+          // remove duplicates
+          new_items = new_items.filter((item, index, self) => index === self.findIndex((t) => t.post_id === item.post_id));
 
           // push has Array Change Detection on component properties
           this.posts.push(...new_items);
           this.adding = false;
           console.log('posts.length:', this.posts.length);
 
-          // resume
-          if (stuck) {
-            console.log('stuck, so trying to increasing post index');
-            this.increase_post_index();
-          }
         },
 
         async increase_post_index() {
           console.log('increasing post_index, current:', this.post_index);
-          // only increase if there are new posts
+          // last list of posts was empty, so stop increasing and show end of feed
+          if (this.ended) {
+            console.log('ended, so not adding new posts');
+            return
+          }
+          // only increase if there are already posts
           if (this.post_index < (this.posts.length - 1)) {
             this.post_index++;
+          // search for new posts before increasing
           } else {
-            console.log('stuck, no new posts and not increasing');
+            console.log('stuck');
+            await this.add_posts();
+            // last list of posts was empty, so stop increasing and show end of feed
+            if (this.ended) {
+              console.log('ended, so not adding new posts');
+              return
+            }
+            this.post_index++;
           }
-          // ask backend for more links when there are less then 10 left
-          if ((this.post_index + 10) > this.posts.length) {
-            console.log('less then 10 left, adding');
-            this.add_posts();
+          // ask backend for more links when there are less then 100 left
+          console.log('filling up');
+          for (let i = 0; i < 10; i++) {
+            // last list of posts was empty, so stop increasing and show end of feed
+            if (this.ended) {
+              console.log('ended, so not adding new posts');
+              return
+            }
+            if (this.posts.length > (this.post_index + 100)) {
+              console.log('filled up yo ', this.posts.length, ' and currently at', this.post_index, ', so not adding new posts');
+              return
+            }
+            await this.add_posts();
           }
         },
 
